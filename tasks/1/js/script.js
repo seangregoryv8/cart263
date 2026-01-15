@@ -8,12 +8,15 @@
 
 "use strict";
 
+const WIDTH = 800;
+const HEIGHT = 800;
+
 /**
  * OH LOOK I DIDN'T DESCRIBE SETUP!!
 */
 function setup()
 {
-    createCanvas(800, 800);
+    createCanvas(WIDTH, HEIGHT);
     background(0);
 }
 
