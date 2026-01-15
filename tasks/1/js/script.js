@@ -19,6 +19,7 @@ function setup()
 
 function draw()
 {
+    background(0);
     push();
 
     switch (questionAsked)
@@ -26,15 +27,15 @@ function draw()
         case 0:
             fill(255);
             textSize(32);
-            //text("Funky Town by Sean Gregory and Leah Song", 100, 100)
+            text("Funky Town by Sean Gregory and Leah Song", 100, 100)
             textSize(24);
-            //text("Choose a question that I answered", 100, 200)
+            text("Choose a question that I answered", 100, 200)
         
             translate(100, 250);
             textSize(18);
             for (let i = 1; i <= 7; i++)
             {
-                //text("Question " + i, 0, i * 60);
+                text("Question " + i, 0, i * 60);
             }
             break;
         case 1:
@@ -58,8 +59,6 @@ function draw()
         case 7:
             question7();
             break;
-
-
     }
 
     pop();
@@ -76,4 +75,5 @@ document.onkeydown = function(e)
     if (e.key === "5") questionAsked = 5;
     if (e.key === "6") questionAsked = 6;
     if (e.key === "7") questionAsked = 7;
+    if (e.key === "0") questionAsked = 0;
 }
