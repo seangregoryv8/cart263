@@ -39,7 +39,8 @@ function question3()
 {
     fill(r1.color.r, r1.color.g, r1.color.b);
     rect(r1.x, r1.y, r1.w, r1.h);
-    fill(r2.color.r, r2.color.g, r2.color.b);white
+    fill(r2.color.r, r2.color.g, r2.color.b);
+    rect(r2.x, r2.y, r2.w, r2.h);
     fill(r3.color.r, r3.color.g, r3.color.b);
     rect(r3.x, r3.y, r3.w, r3.h);
 
