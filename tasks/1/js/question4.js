@@ -9,6 +9,7 @@ function question4()
         fill(r1.color.r, r1.color.g, r1.color.b)
     }
     rect(0            , 0, WIDTH / 3, HEIGHT);
+
     if (r2.turnToWhite)
     {
         fill(255)
@@ -18,6 +19,7 @@ function question4()
         fill(r2.color.r, r2.color.g, r2.color.b)
     }
     rect(WIDTH / 3,     0, WIDTH / 3, HEIGHT);
+
     if (r3.turnToWhite)
     {
         fill(255)
