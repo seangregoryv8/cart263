@@ -85,6 +85,22 @@ function mousePressed()
 {
     r1.x += random(-5, 5);
     r1.y += random(-5, 5);
+    if (questionAsked == 5 && q5Hovering())
+    {
+        if (counter < 10)
+        {
+            counter++;
+        }
+    }
+
+    if (questionAsked == 7)
+    {
+        if (circleToSquare == true)
+            circleToSquare = false;
+        else
+            circleToSquare = true;
+        //circleToSquare = !circleToSquare;
+    }
 }
 
 function keyPressed()
@@ -93,5 +109,6 @@ function keyPressed()
     {
         r2.x += random(-5, 5);
         r2.y += random(-5, 5);
+        changeColour();
     }
 }

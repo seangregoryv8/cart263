@@ -14,6 +14,14 @@ function setup()
 {
     createCanvas(WIDTH, HEIGHT);
     background(0);
+    changeColour();
+}
+
+function changeColour()
+{
+    q7Colour.r = random(0, 255);
+    q7Colour.g = random(0, 255);
+    q7Colour.b = random(0, 255);
 }
 
 function draw()
@@ -63,7 +71,7 @@ function draw()
     pop();
 }
 
-let questionAsked = 0;
+let questionAsked = 7;
 
 document.onkeydown = function(e)
 {
