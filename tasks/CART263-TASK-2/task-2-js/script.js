@@ -171,7 +171,7 @@ function customCreateElement(parent)
 
 for (let i = 0; i < allPTagsThree.length; i++)
 {
-    //customCreateElement(allPTagsThree[i]);
+    customCreateElement(allPTagsThree[i]);
 }
 
 /***EXPLANATION::
@@ -201,6 +201,28 @@ for (let i = 0; i < allPTagsThree.length; i++)
 
 /***CODE */
 
+function customNewBoxCreate(parent)
+{
+    let newDiv = document.createElement("div");
+    newDiv.classList.add("testDiv");
+    parent.appendChild(newDiv);
+    return newDiv;
+}
+
+let newGrid = document.getElementById("new-grid");
+let newSize = newGrid?.clientWidth / 10;
+for (let i = 0; i < 10; i++)
+{
+    for (let j = 0; j < 10; j++)
+    {
+        let returnedDiv = customNewBoxCreate(newGrid);
+        returnedDiv.style.left = j * returnedDiv.clientWidth + "px";
+        returnedDiv.style.top = i * returnedDiv.clientWidth + "px";
+
+        returnedDiv.style.backgroundColor = (i % 2 == 0) ? "white" : "cornflowerblue"
+        returnedDiv.innerHTML = (i % 2 == 0) ? "EVEN" : "ODD"
+    }
+}
 
 /***EXPLANATION::
  * 
@@ -223,6 +245,30 @@ for (let i = 0; i < allPTagsThree.length; i++)
 
 /***CODE */
 
+newGrid = document.getElementById("new-grid-three");
+for (let i = 0; i < 10; i++)
+{
+    for (let j = 0; j < 10; j++)
+    {
+        let returnedDiv = customNewBoxCreate(newGrid);
+        returnedDiv.style.left = j * returnedDiv.clientWidth + "px";
+        returnedDiv.style.top = i * returnedDiv.clientWidth + "px";
+        
+        switch (j % 3)
+        {
+            case 1:
+                returnedDiv.style.backgroundColor = "red";
+                break;
+            case 2:
+                returnedDiv.style.backgroundColor = "orange";
+                break;
+            case 0:
+                returnedDiv.style.backgroundColor = "yellow";
+                break;
+        }
+        returnedDiv.innerHTML = j % 3;
+    }
+}
 
 /***EXPLANATION::
  * 
