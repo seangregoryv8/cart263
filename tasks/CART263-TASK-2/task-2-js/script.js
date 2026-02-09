@@ -210,7 +210,6 @@ function customNewBoxCreate(parent)
 }
 
 let newGrid = document.getElementById("new-grid");
-let newSize = newGrid?.clientWidth / 10;
 for (let i = 0; i < 10; i++)
 {
     for (let j = 0; j < 10; j++)
