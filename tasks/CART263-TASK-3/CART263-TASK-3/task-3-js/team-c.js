@@ -69,12 +69,21 @@ function setup_C() {
       bronze: "#CD7F32"
     };
 
-    let SELECTED_COLOR = colours.red;
+    function getShape()
+    {
+      let val = "TEAM_H_h_cell"
+      if (!currentShape) val = "TEAM_H_h_cell_D";
+      return val;
+    }
+
+    let currentShape = true;
     function getColour()
     {
       const values = Object.values(colours);
-      SELECTED_COLOR = values[Math.floor(Math.random() * values.length)];
+      return values[Math.floor(Math.random() * values.length)];
     }
+    let SELECTED_COLOR = getColour();
+    let SELECTED_BACKGROUND_COLOR = getColour();
     // Creates the initial grid of blue squares and populates the grid object
     function drawStuff()
     {
@@ -89,7 +98,7 @@ function setup_C() {
         {
           // Create a new div element for this grid cell
           let ellipse = document.createElement("div");
-          ellipse.classList.add("TEAM_H_h_cell");
+          ellipse.classList.add(getShape());
           parentCanvas.appendChild(ellipse);
           
           // Position the cell using CSS (left/top are relative to parent with position:relative)
@@ -100,7 +109,7 @@ function setup_C() {
           ellipse.style.width = `${CELL_SIZE}px`;
           ellipse.style.height = `${CELL_SIZE}px`;
           ellipse.style.opacity = 1;
-          ellipse.style.background = "blue";
+          ellipse.style.background = SELECTED_BACKGROUND_COLOR;
           ellipse.style.transition = "background 0.1s ease"; // Smooth color transitions
           
           // Calculate grid row and column indices (e.g., 20/20=1, 40/20=2, etc.)
@@ -140,7 +149,7 @@ function setup_C() {
       Object.values(grid).forEach(cell => {
         cell.distance = Infinity;
         cell.illuminated = false;
-        cell.element.style.background = "blue";
+        cell.element.style.background = SELECTED_BACKGROUND_COLOR;
       });
 
       // Initialize BFS: start with the clicked cell
@@ -154,10 +163,11 @@ function setup_C() {
         // If we've processed all waves, animation is done
         if (waveIndex >= wavesToProcess.length)
         {
+          currentShape = !currentShape
           // Wait briefly, then reset all cells to blue
           setTimeout(() => {
             Object.values(grid).forEach(cell => {
-              cell.element.style.background = "blue";
+              cell.element.style.background = SELECTED_BACKGROUND_COLOR;
             });
           }, ANIMATION_DELAY);
           return;
@@ -166,7 +176,7 @@ function setup_C() {
         // Turn all cells back to blue before illuminating the current wave
         // This creates the "moving front" effect where only the active wave is red
         Object.values(grid).forEach(cell => {
-          cell.element.style.background = "blue";
+          cell.element.style.background = SELECTED_BACKGROUND_COLOR;
         });
 
         // Get the current wave (array of [row, col] cells to illuminate)
@@ -178,6 +188,10 @@ function setup_C() {
           const key = `${row},${col}`;
           if (grid[key])
           {
+            grid[key].element.classList.remove(getShape());
+            currentShape = !currentShape
+            grid[key].element.classList.add(getShape());
+            currentShape = !currentShape
             grid[key].element.style.background = SELECTED_COLOR;  // Turn this cell red
             grid[key].illuminated = true;                 // Mark as visited
           }
@@ -230,7 +244,7 @@ function setup_C() {
       // Only process the click if it's within the canvas bounds
       if (x >= mainXA && x <= mainXB && y >= mainYA && y <= mainYB)
       {
-        getColour();
+        SELECTED_COLOR = getColour();
         // Convert click coordinates from page space to canvas-relative space
         const relativeX = x - mainXA;
         const relativeY = y - mainYA;
