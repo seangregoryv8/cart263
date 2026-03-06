@@ -70,6 +70,7 @@ body
     color: #00ff00;
     overflow-y: auto;
     margin-bottom: 10px;
+    font-size: 12px;
 }
 
 .consoleBlackBox p
