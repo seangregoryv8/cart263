@@ -5,21 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lightscript Console</title>
     <link rel="stylesheet" type="text/css" href="./style.css" />
-    <script src="./script.js"></script>
 </head>
 <body>
+    <div id="objectContainer"></div>
     <div class="consoleGrayBox">
         <div class="consoleTopStuff">
-            <p>Console</p>
+            <p>Lightscript Console</p>
             <button class="closeBtn">X</button>
         </div>
         <div class="consoleBlackBox">
-            <p id="consoleOutput">HI</p>
+            <p id="consoleOutput"></p>
         </div>
         <div class="consoleInputSection">
             <input type="text" id="consoleInput" placeholder="Enter command..." class="consoleTextInput">
             <button class="consoleSubmitBtn" onclick="addToConsole()">Submit</button>
         </div>
     </div>
+    <script src="./script.js"></script>
 </body>
 </html>
