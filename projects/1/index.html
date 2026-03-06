@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightscript Console</title>
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <script src="./script.js"></script>
+</head>
+<body>
+    <div class="consoleGrayBox">
+        <div class="consoleTopStuff">
+            <p>Console</p>
+            <button class="closeBtn">X</button>
+        </div>
+        <div class="consoleBlackBox">
+            <p id="consoleOutput">HI</p>
+        </div>
+        <div class="consoleInputSection">
+            <input type="text" id="consoleInput" placeholder="Enter command..." class="consoleTextInput">
+            <button class="consoleSubmitBtn" onclick="addToConsole()">Submit</button>
+        </div>
+    </div>
+</body>
+</html>
