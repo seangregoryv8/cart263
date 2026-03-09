@@ -4,6 +4,102 @@ let cubeRegistry = {};
 let cubeCounter = 0;
 let selectedCubeId = null;
 
+// Load saved data from localStorage on page load
+function loadFromStorage()
+{
+    const saved = localStorage.getItem("cubeData");
+    if (saved)
+    {
+        try
+        {
+            const data = JSON.parse(saved);
+            cubeRegistry = {};
+            cubeCounter = data.cubeCounter || 0;
+            
+            data.cubes.forEach(c => { createCubeFromData(c); });
+            inputToConsole("Loaded " + data.cubes.length + " saved cube" + (data.cubes.length !== 1 ? "s" : "") + " from storage.");
+        }
+        catch (e)
+        {
+            console.error("Error loading saved data:", e);
+        }
+    }
+}
+
+// Save current cube state to localStorage
+function saveToStorage()
+{
+    const cubesArray = Object.values(cubeRegistry).map(c => ({
+        id: c.id,
+        width: c.width,
+        height: c.height,
+        x: c.x,
+        y: c.y,
+        color: c.color,
+        angle: parseInt(c.element.style.transform.replace("rotate(", "").replace("deg)", "")) || 0,
+        name: c.element.innerHTML
+    }));
+    
+    const data = {
+        cubeCounter: cubeCounter,
+        cubes: cubesArray
+    };
+    
+    localStorage.setItem("cubeData", JSON.stringify(data));
+}
+
+// Create cube from saved data
+function createCubeFromData(cubeData)
+{
+    const cube = document.createElement("div");
+    cube.classList.add("cube");
+    cube.id = "cube-" + cubeData.id;
+    cube.style.width = cubeData.width + "px";
+    cube.style.height = cubeData.height + "px";
+    cube.style.backgroundColor = cubeData.color;
+    cube.style.position = "absolute";
+    cube.style.left = cubeData.x + "px";
+    cube.style.top = cubeData.y + "px";
+    cube.style.display = "flex";
+    cube.style.alignItems = "center";
+    cube.style.justifyContent = "center";
+    cube.style.fontSize = "12px";
+    cube.style.fontWeight = "bold";
+    cube.style.color = "#fff";
+    cube.style.cursor = "pointer";
+    cube.style.transform = "rotate(" + cubeData.angle + "deg)";
+    cube.innerHTML = cubeData.name;
+    
+    // Store cube data
+    cubeRegistry[cubeData.id] = {
+        element: cube,
+        id: cubeData.id,
+        width: cubeData.width,
+        height: cubeData.height,
+        x: cubeData.x,
+        y: cubeData.y,
+        angle: cubeData.angle || 0,
+        color: cubeData.color
+    };
+    
+    cube.onclick = e =>
+    {
+        e.stopPropagation();
+        if (selectedCubeId == cubeData.id)
+        {
+            cubeRegistry[cubeData.id].element.style.border = "none";
+            selectedCubeId = null;
+            inputToConsole("Deselected cube #" + cubeData.id);
+        }
+        else
+        {
+            selectCube(cubeData.id.toString());
+        }
+    };
+    
+    document.body.appendChild(cube);
+}
+
 function addToConsole()
 {
     let newText = document.getElementById("consoleInput").value;
@@ -447,6 +543,7 @@ function createCube(input)
     
     document.body.appendChild(cube);
     inputToConsole("Created cube #" + cubeId + " (100x100 at " + x + ", " + y + ")");
+    saveToStorage();
 }
 
 function cuboNoExisto(id)
@@ -494,6 +591,7 @@ function moveCube(id, newX, newY)
     cube.element.style.top = newY + "px";
 
     inputToConsole("Moved cube #" + id + " to (" + newX + ", " + newY + ").");
+    saveToStorage();
 }
 
 function rotateCube(id, angle)
@@ -505,6 +603,7 @@ function rotateCube(id, angle)
     const cube = cubeRegistry[id];
     cube.element.style.transform = "rotate(" + angle + "deg)";
     inputToConsole("Rotated cube #" + id + " to " + angle + " degrees.");
+    saveToStorage();
 }
 
 function selectCube(id)
@@ -531,6 +630,7 @@ function renameCube(id, newName)
     inputToConsole("Renamed cube #" + id + " to " + newName);
     inputToConsole("Note: This does not change the cube's ID, just the text displayed on it.");
     inputToConsole("Say hi to " + newName);
+    saveToStorage();
 }
 
 
@@ -564,6 +664,8 @@ function deleteCube(id)
     
     if (selectedCubeId === id)
         selectedCubeId = null;
+    
+    saveToStorage();
 }
 
 function eraseAllCubes()
@@ -573,6 +675,7 @@ function eraseAllCubes()
     cubeRegistry = {};
     selectedCubeId = null;
     inputToConsole("All cubes erased.");
+    saveToStorage();
     switch (randomInt(0,3))
     {
         case 0:
@@ -624,3 +727,6 @@ document.getElementById("consoleInput").addEventListener("focus", function()
 function sleep(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
+
+// Load saved data when page loads
+loadFromStorage();
