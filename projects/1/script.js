@@ -588,6 +588,7 @@ function eraseAllCubes()
             inputToConsole("Y'know, I heard one of em was planning on settling down in the countryside, get married, have a couple of rugrat cubes. Poof. Gone. Just like that. You really are something else.");
             break;
     }
+    cubeCounter = 0;
 }
 
 
