@@ -17,7 +17,7 @@ function loadFromStorage()
             cubeCounter = data.cubeCounter || 0;
             
             data.cubes.forEach(c => { createCubeFromData(c); });
-            inputToConsole("Loaded " + data.cubes.length + " saved cube" + (data.cubes.length !== 1 ? "s" : "") + " from storage.");
+            inputToConsole("Loaded " + data.cubes.length + " saved cube" + (data.cubes.length !== 1 ? "s" : "") + " from storage. Welcome back!");
         }
         catch (e)
         {
