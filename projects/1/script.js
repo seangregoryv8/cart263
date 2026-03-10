@@ -16,8 +16,8 @@ function loadFromStorage()
             cubeRegistry = {};
             cubeCounter = data.cubeCounter || 0;
             
-            data.cubes.forEach(c => { createCubeFromData(c); });
-            inputToConsole("Loaded " + data.cubes.length + " saved cube" + (data.cubes.length !== 1 ? "s" : "") + " from storage. Welcome back!");
+            data.cubes.forEach(c => createCubeFromData(c) );
+            inputToConsole(`Loaded ${data.cubes.length} saved cube${data.cubes.length !== 1 ? "s" : ""} from storage. Welcome back!`);
         }
         catch (e)
         {
@@ -401,7 +401,7 @@ async function determineCommand(newText)
             window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&autoplay=1";
             break;
         default:
-            inputToConsole("Sorry, got no idea what " + newText + " is. Type 'help' for available commands.<br>");
+            inputToConsole(`Sorry, got no idea what ${newText} is. Type 'help' for available commands.<br>`);
     }
 }
 
@@ -542,7 +542,7 @@ function createCube(input)
     };
     
     document.body.appendChild(cube);
-    inputToConsole("Created cube #" + cubeId + " (100x100 at " + x + ", " + y + ")");
+    inputToConsole(`Created cube #${cubeId} (100x100 at ${x}, ${y})`);
     saveToStorage();
 }
 
@@ -550,7 +550,7 @@ function cuboNoExisto(id)
 {
     if (!(id in cubeRegistry))
     {
-        inputToConsole("Cube #" + id + " not found.");
+        inputToConsole(`Cube #${id} not found.`);
         return true;
     }
     return false;
@@ -590,7 +590,7 @@ function moveCube(id, newX, newY)
     cube.element.style.left = newX + "px";
     cube.element.style.top = newY + "px";
 
-    inputToConsole("Moved cube #" + id + " to (" + newX + ", " + newY + ").");
+    inputToConsole(`Moved cube #${id} to (${newX}, ${newY}).`);
     saveToStorage();
 }
 
@@ -602,7 +602,7 @@ function rotateCube(id, angle)
 
     const cube = cubeRegistry[id];
     cube.element.style.transform = "rotate(" + angle + "deg)";
-    inputToConsole("Rotated cube #" + id + " to " + angle + " degrees.");
+    inputToConsole(`Rotated cube #${id} to ${angle} degrees.`);
     saveToStorage();
 }
 
@@ -627,9 +627,9 @@ function renameCube(id, newName)
     if (cuboNoExisto(id)) return;
     
     cubeRegistry[id].element.innerHTML = newName;
-    inputToConsole("Renamed cube #" + id + " to " + newName);
+    inputToConsole(`Renamed cube #${id} to ${newName}`);
     inputToConsole("Note: This does not change the cube's ID, just the text displayed on it.");
-    inputToConsole("Say hi to " + newName);
+    inputToConsole(`Say hi to ${newName}`);
     saveToStorage();
 }
 
@@ -724,9 +724,7 @@ document.getElementById("consoleInput").addEventListener("focus", function()
     }
 });
 
-function sleep(time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
+function sleep(time) { return new Promise(resolve => setTimeout(resolve, time)); }
 
 // Load saved data when page loads
 loadFromStorage();
