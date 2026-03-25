@@ -35,7 +35,6 @@ let drawingBoardB = new DrawingBoard(theCanvases[1],theContexts[1],theCanvases[1
 drawingBoardB.addObj(new RectangularObj(100,100,50,70,"#FF5733","#E6E6FA",drawingBoardB.context))
 drawingBoardB.display();
 
-
 let drawingBoardC = new DrawingBoard(theCanvases[2],theContexts[2],theCanvases[2].id);
 //add a freestyle object to canvas C
 drawingBoardC.addObj(new FreeStyleObj(-100,100,500,"#CF9FFF","#CF9FFF", drawingBoardC.context))
@@ -60,18 +59,7 @@ function animationLoop(){
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-/** TASK 3:(Drawing Board C) - 
- *  1: Affect the free-style shape by input from the microphone somehow, in real time...
- *  at least two properties of the free-style shape need to update and change...
- *  2: apply some arbitrary animation to the free-style shape (change the properties in the update method provided)
- * -> the code for the microphone has NOT been added  - you need to implement it correctly...
- *  
- */
-
 /** TASK 4:(Video - recorded - )
- * // add filters or manipulate the pixels... take user input from the boxes..
- *  1: using thr provided VideoObj class - > 
- * you will see all the code needed for activating  a blur filter on the video - activate it
  * 2: Next: apply the same logic to enable the other 3 possible filters (adding the event listeners etc)
  * -> make sure to look at the input/output ranges for the values
  * 3: -> apply the context filters  to the video for the three filter options (and activate the blur as well)

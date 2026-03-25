@@ -111,7 +111,8 @@ class DrawingBoard {
       this.initAudio();
     }
     if(this.drawingBoardId ==="partD"){
-      console.log("in D")
+      console.log(this.objectsOnCanvas)
+      this.objectsOnCanvas[1].x = this.mouseOffsetX
    }
   }
 
