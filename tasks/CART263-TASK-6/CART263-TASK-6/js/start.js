@@ -38,7 +38,7 @@ drawingBoardB.display();
 
 let drawingBoardC = new DrawingBoard(theCanvases[2],theContexts[2],theCanvases[2].id);
 //add a freestyle object to canvas C
-drawingBoardC.addObj(new FreeStyleObj(10,100,300,"#CF9FFF","#CF9FFF", drawingBoardC.context))
+drawingBoardC.addObj(new FreeStyleObj(-100,100,500,"#CF9FFF","#CF9FFF", drawingBoardC.context))
 drawingBoardC.display();
 
 let drawingBoardD = new DrawingBoard(theCanvases[3],theContexts[3],theCanvases[3].id);
@@ -59,14 +59,6 @@ function animationLoop(){
 }
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-let audioContext = new AudioContext();
-/** TASK 2:(Drawing Board B) - 
- *  1: Affect the rectangle by input from the microphone somehow, in real time...
- *  at least two properties of the rectangle need to update and change...
- *  2: apply some arbitrary animation to the rectangle obj (change the properties in the update method provided)
- * -> the code for the microphone has NOT been added  - you need to implement it correctly...
- *  
- */
 
 /** TASK 3:(Drawing Board C) - 
  *  1: Affect the free-style shape by input from the microphone somehow, in real time...

@@ -11,6 +11,7 @@ class RectangularObj {
     this.startAngle = 0;
     this.endAngle = Math.PI * 2; //full rotation
     this.context = context;
+    this.angle = 0;
   }
 
   display() {
@@ -25,5 +26,7 @@ class RectangularObj {
     //update freestyle
    // this.x+=1;
     //console.log("rectangle update")
+    this.angle += 0.05;
+    this.x += Math.sin(this.angle) * 1.5;
 }
 }

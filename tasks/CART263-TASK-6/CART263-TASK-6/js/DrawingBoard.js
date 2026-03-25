@@ -48,6 +48,17 @@ class DrawingBoard {
       x: 0, y: 0
     };
 
+    this.isActive = false;
+    this.canvas.addEventListener("focus", () => {
+      this.isActive = true;
+      if (this.audioContext) this.audioContext.resume();
+    });
+    
+    this.canvas.addEventListener("blur", () => {
+      this.isActive = false;
+      if (this.audioContext) this.audioContext.suspend();
+    });
+
     this.audioInitiated = false;
   }
 
@@ -93,11 +104,11 @@ class DrawingBoard {
         obj.speed.y = this.speed * this.direction.y;
       }
     }
-    if(this.drawingBoardId ==="partB"){
+    if(this.drawingBoardId === "partB"){
       this.initAudio();
     }
     if(this.drawingBoardId ==="partC"){
-      console.log("in C")
+      this.initAudio();
     }
     if(this.drawingBoardId ==="partD"){
       console.log("in D")
@@ -125,39 +136,52 @@ class DrawingBoard {
       console.log("Mic error:", err);
     }
   }
-
   processAudio() {
-  const data = new Uint8Array(this.analyser.frequencyBinCount);
-
-  const loop = () => {
-    this.analyser.getByteFrequencyData(data);
-
-    let sum = 0;
-    for (let i = 0; i < data.length; i++) sum += data[i];
-    const volume = sum / data.length;
-
-    let low = 0, high = 0;
-    for (let i = 0; i < data.length; i++) {
-      if (i < data.length / 2) low += data[i];
-      else high += data[i];
-    }
-
-    low /= data.length / 2;
-    high /= data.length / 2;
-
-    for (let obj of this.objectsOnCanvas) {
-      const r = low;    // bass → red
-      const g = volume; // loudness → green
-      const b = high;   // treble → blue
-    
-      obj.fill_color = `rgb(${r}, ${g}, ${b})`;
-    }
-
-    requestAnimationFrame(loop);
-  };
-
-  loop();
-}
+    const data = new Uint8Array(this.analyser.frequencyBinCount);
+  
+    const loop = () => {
+      this.analyser.getByteFrequencyData(data);
+  
+      if (this.isActive) { // <-- only update objects if canvas is focused
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) sum += data[i];
+        const volume = sum / data.length;
+  
+        let low = 0, high = 0;
+        for (let i = 0; i < data.length; i++) {
+          if (i < data.length / 2) low += data[i];
+          else high += data[i];
+        }
+  
+        low /= data.length / 2;
+        high /= data.length / 2;
+  
+        for (let obj of this.objectsOnCanvas) {
+          if (this.drawingBoardId === "partB") {
+            obj.width = 50 + (volume / 255) * 150;
+            obj.height = 50 + (volume / 255) * 150;
+  
+            obj.x = 200 + (high / 255) * this.canvas.width;
+            obj.y = 150 + (high / 255) * this.canvas.height;
+  
+            const hue = (low / 255) * 360;
+            obj.fill_color = `hsl(${hue}, 80%, 50%)`;
+          }
+  
+          if (this.drawingBoardId === "partC") {
+            obj.angularSpeed = 0.05 + 0.05 * Math.sin(volume * 0.5);
+            obj.hueShift = 10 * Math.sin(volume * 0.3);
+            const currentHue = obj.baseHue + obj.hueShift;
+            obj.fill_color = `hsl(${currentHue}, ${obj.baseSaturation}%, ${obj.baseLightness}%)`;
+          }
+        }
+      }
+  
+      requestAnimationFrame(loop); // always looping, but only updating when focused
+    };
+  
+    loop();
+  }
 
   clickCanvas(e) {
    // console.log("clicked");
@@ -175,7 +199,7 @@ class DrawingBoard {
       this.processAudio();
     }
     if(this.drawingBoardId ==="partC"){
-      console.log("in C")
+      this.processAudio();
     }
     if(this.drawingBoardId ==="partD"){
       console.log("in D")
