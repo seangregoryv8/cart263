@@ -60,9 +60,6 @@ function animationLoop(){
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 /** TASK 4:(Video - recorded - )
- * 2: Next: apply the same logic to enable the other 3 possible filters (adding the event listeners etc)
- * -> make sure to look at the input/output ranges for the values
- * 3: -> apply the context filters  to the video for the three filter options (and activate the blur as well)
  * 4: ->  using the mousemove event listener (already applied in the drawing board) - 
  * make the rectangle (over the video) - follow the mouse ... AND change color when you click on the canvas
  * USE & FILL IN THE METHODS ALREADY set out in the VideoObj class...

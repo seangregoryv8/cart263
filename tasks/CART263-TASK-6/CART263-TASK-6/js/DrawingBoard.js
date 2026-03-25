@@ -111,8 +111,7 @@ class DrawingBoard {
       this.initAudio();
     }
     if(this.drawingBoardId ==="partD"){
-      console.log(this.objectsOnCanvas)
-      this.objectsOnCanvas[1].x = this.mouseOffsetX
+      this.objectsOnCanvas[0].updatePositionRect(this.mouseOffsetX, this.mouseOffsetY);
    }
   }
 
@@ -203,8 +202,8 @@ class DrawingBoard {
       this.processAudio();
     }
     if(this.drawingBoardId ==="partD"){
-      console.log("in D")
-      }
+      this.objectsOnCanvas[0].changeColor(this.getRandomColor());
+    }
   }
   /* method to add obj to canvas */
   addObj(objToAdd) {
