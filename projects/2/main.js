@@ -10,6 +10,7 @@ function ranInt(min, max)
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(10, 10, 20);
 const canvas = document.querySelector("#bg");
 const renderer = new THREE.WebGLRenderer({ canvas: canvas })
 
@@ -25,12 +26,10 @@ const controls = new OrbitControls(camera, canvas);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-camera.position.setZ(20);
-
 const eyes = [];
 for (let i = 0; i <= 3; i++)
 {
-    const radius = 7 + i
+    const radius = 7 + (i * 1.5)
     const points = [];
 
     const r = radius;
@@ -57,7 +56,7 @@ for (let i = 0; i <= 3; i++)
     eyes.push(mesh);
     
     makeEyes(40, eyes[i], radius, new THREE.SphereGeometry(0.5 + (i / 10), 25, 25), eyeMaterial, false)
-    makeEyes(30, eyes[i], radius, new THREE.SphereGeometry(0.3 + (i / 10), 25, 25), eyeMaterial, true)
+    makeEyes(100, eyes[i], radius, new THREE.SphereGeometry(0.3 + (i / 10), 25, 25), eyeMaterial, true)
 
     //eyes[i].scale.z = 0.5;
 }
@@ -85,11 +84,12 @@ function makeEyes(am, eye, radius, eyeGeometry, eyeMaterial, ranRan)
         eye.add(eyeWall);
     }
 }
-eyes[0].rotateX(ranInt(0, HALF * 2))
-eyes[0].rotateY(ranInt(0, HALF * 2))
-eyes[0].rotateZ(ranInt(0, HALF * 2))
+eyes[0].rotateY(HALF / 2)
+eyes[0].rotateZ(HALF / 2)
 eyes[1].rotateY(HALF)
-eyes[3].rotateX(HALF)
+eyes[2].rotateX(HALF)
+eyes[2].rotateY(-HALF / 2)
+eyes[3].rotateX(HALF / 8)
 
 eyes[0].scale.x = 0.7;
 for (let i = 0; i <= 3; i++)
@@ -97,27 +97,17 @@ for (let i = 0; i <= 3; i++)
     scene.add(eyes[i]);
 }
 
-const uniforms = {
-    "tex": { value: "textures/eye.jpg" }
-};
-
-const mainEyeMaterial = new THREE.ShaderMaterial( {
-    uniforms        : uniforms,
-    vertexShader    : document.getElementById( 'vertex_shader' ).textContent,
-    fragmentShader  : document.getElementById( 'fragment_shader' ).textContent
-} );
-
-const mainEyeMaterialv2 = new THREE.MeshBasicMaterial( {
+const mainEyeMaterial = new THREE.MeshBasicMaterial( {
     map: eye_texture,
     metalness: 0.2,
     roughness: 0.3
 })
 
-mainEyeMaterialv2.side = THREE.FrontSide
+mainEyeMaterial.side = THREE.FrontSide
 
 const eyeball = new THREE.Mesh(
     new THREE.SphereGeometry(3.5, 100, 100),
-    mainEyeMaterialv2
+    mainEyeMaterial
 );
 const eyeLight = new THREE.PointLight(0x88ccff, 2, 50);
 eyeball.add(eyeLight);
@@ -145,15 +135,16 @@ window.addEventListener("mousemove", (event) => {
 });
 
 
-const acceleration = 1;
+const acceleration = 0.004;
 function animate()
 {
     controls.update();
     requestAnimationFrame(animate);
-    eyes[0].rotation.x += 0.003 * acceleration;
-    eyes[1].rotation.y += 0.004 * acceleration;
-    eyes[2].rotation.z += 0.005 * acceleration;
-    eyes[3].rotation.x += 0.002 * acceleration;
+    eyes[0].rotation.z += acceleration * ranInt(1, 4);
+    eyes[1].rotation.z += acceleration * ranInt(1, 4);
+    eyes[2].rotation.x += acceleration * ranInt(1, 4);
+    eyes[2].rotation.y += acceleration * ranInt(1, 4);
+    eyes[3].rotation.z += acceleration * ranInt(1, 4);
 
     const raycaster = new THREE.Raycaster();
     const mouseVec = new THREE.Vector2();
