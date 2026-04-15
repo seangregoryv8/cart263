@@ -25,21 +25,6 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 scene.fog = new THREE.Fog(0xaaaaaa, 30, 120);
 scene.fog.density = 0.02;
 
-const humanCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-humanCamera.position.set(-FLOOR_Y, FLOOR_Y, 0); // eye-level height of a human
-
-
-let usingHumanCamera = false;
-
-window.addEventListener('keydown', (event) => {
-    if (event.key.toLowerCase() === 'e') {
-        controls.enabled = usingHumanCamera;
-        usingHumanCamera = !usingHumanCamera;
-        if (usingHumanCamera)
-            humanCamera.lookAt(eyeball.position);
-    }
-});
-
 const controls = new OrbitControls(camera, canvas);
 
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -135,11 +120,31 @@ const eyeballState = {
     maxInterval: 10000
 };
 
+const humanCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+humanCamera.position.set(-FLOOR_Y, FLOOR_Y, 0);
+
+let usingHumanCamera = false;
+
+window.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'e')
+    {
+        controls.enabled = usingHumanCamera;
+        usingHumanCamera = !usingHumanCamera;
+        if (usingHumanCamera)
+            humanCamera.lookAt(eyeball.position);
+        eyeballState.locked = usingHumanCamera;
+    }
+});
+
 function turnEyeball(eye)
 {
-    eye.rotation.x += (eyeballState.newRotation.x - eye.rotation.x) * 0.05;
-    eye.rotation.y += (eyeballState.newRotation.y - eye.rotation.y) * 0.05;
-    eye.rotation.z += (eyeballState.newRotation.z - eye.rotation.z) * 0.05;
+    const target = usingHumanCamera ? humanCamera.position : eyeballState.newRotation;
+
+    const vecToTarget = new THREE.Vector3().subVectors(target, eye.position).normalize();
+    const targetRot = new THREE.Euler().setFromVector3(vecToTarget);
+    eye.rotation.x += (targetRot.x - eye.rotation.x + (QUARTER / 2)) * 0.05;
+    eye.rotation.y += (targetRot.y - eye.rotation.y) * 0.05;
+    eye.rotation.z += (targetRot.z - eye.rotation.z) * 0.05;
 }
 
 function setEyeTurn()
@@ -215,7 +220,8 @@ function animate()
     
     rotateHaloLights(haloLights);
 
-    if(usingHumanCamera){
+    if(usingHumanCamera)
+        {
         const t = performance.now() * 0.001;
         humanCamera.position.x += Math.sin(t*0.5)*0.002;
         humanCamera.position.z += Math.cos(t*0.5)*0.002;
