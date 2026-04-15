@@ -1,14 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { EyeRings } from "./EyeRings.js";
-import { ranNum, QUARTER, FULL, eyeMaterial, mainEyeMaterial, grassMaterial } from "./constants.js";
+import { ranNum, cloud_texture, QUARTER, FULL, eyeMaterial, mainEyeMaterial, grassMaterial, ringMaterial, goldMaterial, textMaterial, createHalo } from "./constants.js";
 
 
 const RING_COUNT = 4;
 const RING_BASE_RADIUS = 7;
 const FLOOR_Y = -15;
-
-const haloLights = [];
 
 const scene = new THREE.Scene();
 
@@ -22,8 +20,8 @@ const renderer = new THREE.WebGLRenderer({ canvas: canvas })
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-scene.fog = new THREE.Fog(0xaaaaaa, 30, 120);
-scene.fog.density = 0.02;
+scene.fog = new THREE.Fog(0x6699bb, 30, 120);
+scene.fog.density = 0.4;
 
 const controls = new OrbitControls(camera, canvas);
 
@@ -46,19 +44,48 @@ for (let i = 0; i < RING_COUNT; i++)
     const geometry = new THREE.LatheGeometry(points, 256);
     geometry.rotateX(QUARTER)
     geometry.computeVertexNormals();
+    
     eyes.push(new EyeRings(new THREE.Mesh(
         geometry,
-        new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            emissive: 0xaaaaaa,
-            metalness: 0.3,
-            roughness: 0.2,
-            side: THREE.DoubleSide
-    }))));
+        goldMaterial
+    )));
     
+    // addTextToRing(eyes[i].mesh, "𐑧𐑮𐑯", radius, 0.5 + (i * 1.7), 1.2);
+    const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(10, 2), textMaterial);
+    textMesh.position.set(0, RING_BASE_RADIUS + (i * 1.7), 0);
+    textMesh.rotation.x = QUARTER * 3;
+    // eyes[i].mesh.add(textMesh);
     makeEyes(40, eyes[i], radius, new THREE.SphereGeometry(0.5 + (i / 10), 25, 25), eyeMaterial, false)
     makeEyes(100, eyes[i], radius, new THREE.SphereGeometry(0.3 + (i / 10), 25, 25), eyeMaterial, true)
 }
+
+function createCloudLayer(y = 20)
+{
+    const cloudGeometry = new THREE.BufferGeometry();
+    const cloudCount = 300;
+    const positions = new Float32Array(cloudCount * 3);
+    for (let i = 0; i < cloudCount; i++)
+    {
+        positions[i * 3] = (Math.random() - 0.5) * 200;
+        positions[i * 3 + 1] = Math.random() * 80 + y;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+    }
+    cloudGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const cloudMaterial = new THREE.PointsMaterial({
+        size: ranNum(30, 100),
+        map: cloud_texture,
+        transparent: true,
+        opacity: 0.7,
+        depthWrite: false
+    });
+    const cloud = new THREE.Points(cloudGeometry, cloudMaterial);
+    cloud.scale.set(1, 2, 1);
+    return cloud;
+}
+
+let cloud = createCloudLayer(20);
+scene.add(cloud);
 
 function makeEyes(eyeAmount, eye, radius, eyeGeometry, eyeMaterial, randomZ)
 {
@@ -93,13 +120,6 @@ eyes[3].mesh.rotateX(QUARTER / 8)
 
 eyes[0].mesh.scale.x = 0.7;
 for (let i = 0; i <= 3; i++) scene.add(eyes[i].mesh);
-
-
-mainEyeMaterial.side = THREE.FrontSide
-
-const ambientLight = new THREE.AmbientLight(0xffffff);
-ambientLight.intensity = 3.0;
-// scene.add(ambientLight);
 
 const eyeball = new THREE.Mesh(
     new THREE.SphereGeometry(3.5, 100, 100),
@@ -175,17 +195,11 @@ window.addEventListener("mousemove", (event) => {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
-
-for (let i = 0; i < 8; i++) {
-    const l = new THREE.SpotLight(0x88ccff, 0.5, 30, Math.PI / 8);
-    const angle = (i / 8) * FULL;
-    l.position.set(Math.cos(angle) * 10, 0, Math.sin(angle) * 10);
-    l.target = eyeball;
-    scene.add(l);
-    haloLights.push(l);
-}
+const halo = createHalo(12, 0.5, 100, 0x88ccff);
+scene.add(halo);
 
 createLights();
+
 
 function animate()
 {
@@ -201,7 +215,9 @@ function animate()
     raycaster.ray.at(20, target);
 
     for (let i = 0; i < eyes.length; i++)
+    {
         eyes[i].changeSpeed();
+    }
     eyes[0].mesh.rotation.z += eyes[0].increase
     eyes[1].mesh.rotation.z += eyes[1].increase
     eyes[2].mesh.rotation.x += eyes[2].increase
@@ -217,9 +233,8 @@ function animate()
         eyes[i].mesh.material.emissiveIntensity = 0.5 + Math.sin(time * 2) * 0.5;
         eyes[i].mesh.material.emissive.setHex(0xC9980B)
     }
-    
-    rotateHaloLights(haloLights);
 
+    halo.material.opacity = 0.4 + Math.sin(time * 2) * 0.2;
     if(usingHumanCamera)
         {
         const t = performance.now() * 0.001;
@@ -231,7 +246,8 @@ function animate()
 }
 animate();
 
-function createTree(x, z, scale = 1) {
+function createTree(x, z, scale = 1)
+{
     const trunk = new THREE.Mesh(
         new THREE.CylinderGeometry(0.1 * scale, 0.1 * scale, 1 * scale),
         new THREE.MeshStandardMaterial({ color: 0x654321 })
@@ -263,29 +279,34 @@ function createSky()
 
 function createLights()
 {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // soft but visible
-    scene.add(ambientLight);    
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // soft but visible
 
     // Main point light on the eyeball
-    const eyeLight = new THREE.PointLight(0x88ccff, 500, 10000, 2);
+    const eyeLight = new THREE.PointLight(0x88ccff, 100, 1000, 2);
     eyeLight.position.set(0, 15, 0);
     eyeLight.castShadow = true;
-    eyeball.add(eyeLight);  
 
     // Fill lights for floor visibility
-    const fillLight1 = new THREE.PointLight(0xffffff, 0.3, 50);
+    const fillLight1 = new THREE.PointLight(0xffffff, 3, 50);
     fillLight1.position.set(20, 10, 20);
-    scene.add(fillLight1);  
 
-    const fillLight2 = new THREE.PointLight(0xffffff, 0.3, 50);
+    const fillLight2 = new THREE.PointLight(0xffffff, 3, 50);
     fillLight2.position.set(-20, 10, -20);
-    scene.add(fillLight2);  
 
     // Optional subtle directional light for shadow definition
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.2);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.1);
     dirLight.position.set(0, 50, 0);
     dirLight.castShadow = true;
+
+    const haloLight = new THREE.PointLight(0x88ccff, 100, 100);
+    haloLight.position.copy(halo.position);
+
+    scene.add(ambientLight);
+    eyeball.add(eyeLight);
+    scene.add(fillLight1);
+    scene.add(fillLight2);
     scene.add(dirLight);
+    scene.add(haloLight);
 }
 function createFloor()
 {
