@@ -26,6 +26,60 @@ const controls = new OrbitControls(camera, canvas);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+class EyeRings
+{
+    constructor(mesh)
+    {
+        this.mesh = mesh;
+        this.maxSpeed = 0.15;
+        this.increase = 0.004;
+        this.accelerator = 0.001;
+        this.increasing = true;
+        this.burst = false;
+        this.scheduleBurst();
+    }
+    changeSpeed()
+    {
+        if (this.burst)
+        {
+            if (this.increasing)
+            {
+                this.increase += this.accelerator;
+                if (this.increase >= this.maxSpeed)
+                {
+                    this.increase = this.maxSpeed;
+                    this.increasing = false;
+                }
+            }
+            else
+            {
+                this.increase -= this.accelerator;
+                if (this.increase <= 0.004)
+                {
+                    this.increase = 0.004;
+                    this.increasing = true;
+                    this.burst = false;
+                    this.maxSpeed = ranInt(0.1, 0.2);
+                }
+            }
+        }
+    }
+
+    scheduleBurst()
+    {
+        const time = ranInt(1000, 4500);
+        setTimeout(() => {
+            this.burst = true;
+            this.scheduleBurst();
+        }, time);
+    }
+}
+
+const ringAccels = {
+    limit: 1,
+    rings: []
+}
+
 const eyes = [];
 for (let i = 0; i <= 3; i++)
 {
@@ -53,7 +107,7 @@ for (let i = 0; i <= 3; i++)
             side: THREE.DoubleSide
     }));
     mesh.rotation.x = HALF
-    eyes.push(mesh);
+    eyes.push(new EyeRings(mesh));
     
     makeEyes(40, eyes[i], radius, new THREE.SphereGeometry(0.5 + (i / 10), 25, 25), eyeMaterial, false)
     makeEyes(100, eyes[i], radius, new THREE.SphereGeometry(0.3 + (i / 10), 25, 25), eyeMaterial, true)
@@ -81,20 +135,20 @@ function makeEyes(am, eye, radius, eyeGeometry, eyeMaterial, ranRan)
         
         eyeWall.lookAt(eyeWall.position.clone().multiplyScalar(2));
         eyeWall.rotateY(HALF)
-        eye.add(eyeWall);
+        eye.mesh.add(eyeWall);
     }
 }
-eyes[0].rotateY(HALF / 2)
-eyes[0].rotateZ(HALF / 2)
-eyes[1].rotateY(HALF)
-eyes[2].rotateX(HALF)
-eyes[2].rotateY(-HALF / 2)
-eyes[3].rotateX(HALF / 8)
+eyes[0].mesh.rotateY(HALF / 2)
+eyes[0].mesh.rotateZ(HALF / 2)
+eyes[1].mesh.rotateY(HALF)
+eyes[2].mesh.rotateX(HALF)
+eyes[2].mesh.rotateY(-HALF / 2)
+eyes[3].mesh.rotateX(HALF / 8)
 
-eyes[0].scale.x = 0.7;
+eyes[0].mesh.scale.x = 0.7;
 for (let i = 0; i <= 3; i++)
 {
-    scene.add(eyes[i]);
+    scene.add(eyes[i].mesh);
 }
 
 const mainEyeMaterial = new THREE.MeshBasicMaterial( {
@@ -125,7 +179,9 @@ eyeball.overdraw = true;
 eyeball.castShadow = true;
 scene.add(eyeball);
 
+eyeball.originalY = eyeball.position.y;
 
+console.log(ringAccels)
 
 const mouse = new THREE.Vector2();
 
@@ -134,17 +190,11 @@ window.addEventListener("mousemove", (event) => {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
-
-const acceleration = 0.004;
+const acceleration = 0.008;
 function animate()
 {
     controls.update();
     requestAnimationFrame(animate);
-    eyes[0].rotation.z += acceleration * ranInt(1, 4);
-    eyes[1].rotation.z += acceleration * ranInt(1, 4);
-    eyes[2].rotation.x += acceleration * ranInt(1, 4);
-    eyes[2].rotation.y += acceleration * ranInt(1, 4);
-    eyes[3].rotation.z += acceleration * ranInt(1, 4);
 
     const raycaster = new THREE.Raycaster();
     const mouseVec = new THREE.Vector2();
@@ -154,12 +204,29 @@ function animate()
     raycaster.setFromCamera(mouseVec, camera);
     raycaster.ray.at(20, target);
 
-    //eyeball.lookAt(target);
-    //eyes[2].rotation.y += 0.1;
-    //eyes[0].rotation.z += 0.1;
-    //eyes[1].rotation.z += 0.1;
-    //eyes[3].rotation.z += 0.1;
-    //torus.rotation.z += 0.1;
+    for (let i = 0; i < eyes.length; i++)
+    {
+        eyes[i].changeSpeed();
+    }
+    eyes[0].mesh.rotation.z += eyes[0].increase
+    eyes[1].mesh.rotation.z += eyes[1].increase
+    eyes[2].mesh.rotation.x += eyes[2].increase
+    eyes[2].mesh.rotation.y += eyes[2].increase
+    eyes[3].mesh.rotation.z += eyes[3].increase
+    
+    const time = Date.now() * 0.001;
+    const bobAmplitude = 0.5;
+    const bobSpeed = 1.5;
+    eyeball.position.y = eyeball.originalY + Math.sin(time * bobSpeed) * bobAmplitude;
+
+    eyeball.rotation.x = Math.sin(time * 0.8) * 0.05;
+    eyeball.rotation.z = Math.sin(time * 1.2) * 0.03;
+    
+    eyeball.position.y = eyeball.originalY + Math.sin(time * 1.5 + 0.2) * 0.5;
+    eyeball.rotation.x = Math.sin(time * 0.9 + 1.0) * 0.05;
+    eyeball.rotation.z = Math.sin(time * 1.3 + 0.5) * 0.03;
+
+
     renderer.render(scene, camera);
 }
 animate();
