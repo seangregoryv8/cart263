@@ -72,7 +72,7 @@ export const goldMaterial = new THREE.MeshStandardMaterial({
             side: THREE.DoubleSide
 });
 
-export function createHalo(radius = 15, tube = 0.5, segments = 64, color = 0x88ccff)
+export function createHalo(radius = 15, tube = 0.5, segments = 64, color = 0xDBB42C)
 {
     const geometry = new THREE.TorusGeometry(radius, tube, 16, segments);
     const material = new THREE.MeshBasicMaterial({

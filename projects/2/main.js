@@ -195,7 +195,7 @@ window.addEventListener("mousemove", (event) => {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
-const halo = createHalo(12, 0.5, 100, 0x88ccff);
+const halo = createHalo(12, 0.5, 100);
 scene.add(halo);
 
 createLights();
@@ -320,10 +320,6 @@ function createFloor()
     const floorFill = new THREE.PointLight(0x8888ff, 0.3, 50);
     floorFill.position.set(0, 10, 10);
     scene.add(floorFill);
-}
-
-function rotateHaloLights(lights) {
-    lights.forEach(l => l.position.applyAxisAngle(new THREE.Vector3(0,1,0), 0.01));
 }
 
 function bobEyeball(eye, eyes) {
