@@ -279,10 +279,10 @@ function createSky()
 
 function createLights()
 {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // soft but visible
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2); // soft but visible
 
     // Main point light on the eyeball
-    const eyeLight = new THREE.PointLight(0x88ccff, 100, 1000, 2);
+    const eyeLight = new THREE.PointLight(0x88ccff, 1000, 1000, 2);
     eyeLight.position.set(0, 15, 0);
     eyeLight.castShadow = true;
 
@@ -294,7 +294,7 @@ function createLights()
     fillLight2.position.set(-20, 10, -20);
 
     // Optional subtle directional light for shadow definition
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.1);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.2);
     dirLight.position.set(0, 50, 0);
     dirLight.castShadow = true;
 
@@ -303,8 +303,8 @@ function createLights()
 
     scene.add(ambientLight);
     eyeball.add(eyeLight);
-    scene.add(fillLight1);
-    scene.add(fillLight2);
+    //scene.add(fillLight1);
+    //scene.add(fillLight2);
     scene.add(dirLight);
     scene.add(haloLight);
 }
