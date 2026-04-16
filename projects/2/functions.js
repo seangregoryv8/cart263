@@ -102,8 +102,9 @@ export function createLights(halo)
     const ambientLight = new THREE.AmbientLight(WHITE, 0.2); // soft but visible
 
     // Main point light on the eyeball
-    const eyeLight = new THREE.PointLight(BLUE, 1000, 1000, 2);
-    eyeLight.position.set(0, 15, 0);
+    const eyeLight = new THREE.SpotLight(BLUE, 500, 20, Math.PI * 0.25, 0.5);
+    eyeLight.position.set(0, 7, 0);
+    eyeLight.target.position.set(0, 0, 0);
     eyeLight.castShadow = true;
 
     // Optional subtle directional light for shadow definition
@@ -111,8 +112,19 @@ export function createLights(halo)
     dirLight.position.set(0, 50, 0);
     dirLight.castShadow = true;
 
-    const haloLight = new THREE.PointLight(BLUE, 100, 100);
+    const haloLight = new THREE.PointLight(GOLD, 3000, 11, QUARTER);
     haloLight.position.copy(halo.position);
 
-    return [ambientLight, eyeLight, dirLight, haloLight]
+    const upLight = new THREE.SpotLight(BLUE, 500, 20, Math.PI * 0.25, 0.5);
+    upLight.position.set(0, -7, 0);
+    upLight.target.position.set(0, 10, 0);
+    upLight.castShadow = true;
+
+    return [
+        ambientLight, 
+        eyeLight,
+        dirLight, 
+        haloLight,
+        upLight
+    ]
 }

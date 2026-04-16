@@ -1,6 +1,9 @@
 import { ranNum } from "./constants.js";
+import { allLights } from "./main.js";
 
 let verses = [];
+
+export var isSpeaking = false;
 
 async function loadVerses()
 {
@@ -18,6 +21,7 @@ function scheduleVerse()
     const time = ranNum(5000, 15000); // 5–15 seconds
     setTimeout(() => {
         speakRandomVerse();
+        isSpeaking = true;
         scheduleVerse(); // schedule next one
     }, time);
 }
@@ -61,37 +65,18 @@ function speakRandomVerse()
         if (elapsed < fadeDuration)
         {
             verseDisplay.style.opacity = (1 - elapsed / fadeDuration).toString();
+            allLights[3].distance = 10 + (verseDisplay.style.opacity * 10);
             requestAnimationFrame(fade);
         }
-        else verseDisplay.style.opacity = '0';
+        else
+        {
+            isSpeaking = false;
+            verseDisplay.style.opacity = '0';
+        }
     }
     fade();
 }
 
-function fancyText(text, fontSize = 64, color = "#FFD700") {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 512;
-    canvas.height = 128;
-
-    ctx.font = `${fontSize}px serif`;
-    ctx.fillStyle = color;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide
-    });
-
-    const geometry = new THREE.PlaneGeometry(10, 2.5);
-    const mesh = new THREE.Mesh(geometry, material);
-    return mesh;
-}
 function getAlienVoice()
 {
     const voices = speechSynthesis.getVoices();

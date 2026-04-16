@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { EyeRings } from "./EyeRings.js";
 import { ranNum, QUARTER, eyeMaterial, mainEyeMaterial, goldMaterial, createHalo } from "./constants.js";
 import { bobEyeball, createCloudLayer, createFloor, createLights, createSky, createTree, makeEyes } from './functions.js';
+import { isSpeaking } from './verse.js';
 
 const RING_COUNT = 4;
 const RING_BASE_RADIUS = 7;
@@ -58,6 +59,7 @@ for (let i = 0; i < RING_COUNT; i++)
         geometry,
         goldMaterial
     )));
+
 
     makeEyes(40, eyes[i], radius, new THREE.SphereGeometry(0.5 + (i / 10), 25, 25), eyeMaterial, false)
     makeEyes(100, eyes[i], radius, new THREE.SphereGeometry(0.3 + (i / 10), 25, 25), eyeMaterial, true)
@@ -115,7 +117,7 @@ eyeball.castShadow = true;
 eyeball.originalY = eyeball.position.y;
 scene.add(eyeball);
 
-let allLights = createLights(halo);
+export let allLights = createLights(halo);
 for (let i = 0; i < allLights.length; i++) scene.add(allLights[i])
 
 for (let i = 0; i < 1000; i++)
@@ -148,6 +150,9 @@ function animate()
         eyes[i].mesh.material.emissiveIntensity = 0.5 + Math.sin(time * 2) * 0.5;
         eyes[i].mesh.material.emissive.setHex(0xC9980B)
     }
+
+    allLights[1].position.y = eyeball.position.y + 7
+    allLights[3].position.y = eyeball.position.y + 7
 
     eyes[0].mesh.rotation.z += eyes[0].increase
     eyes[1].mesh.rotation.z += eyes[1].increase
@@ -184,7 +189,6 @@ function setEyeTurn()
         eyeballState.newRotation.y = ranNum(-QUARTER, QUARTER);
         eyeballState.newRotation.z = ranNum(-QUARTER, QUARTER);
         eyeballState.locked = true;
-        console.log("New eye rotation:", eyeballState.newRotation);
         setEyeTurn();
     }, ranNum(eyeballState.minInterval, eyeballState.maxInterval));
 }

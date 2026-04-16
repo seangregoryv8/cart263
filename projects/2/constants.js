@@ -12,12 +12,11 @@ export const QUARTER = Math.PI / 2;
 const loader = new THREE.TextureLoader();
 const eye_texture = await loader.loadAsync('textures/eyeComplete.png');
 export const cloud_texture = await loader.loadAsync('textures/cloud3.png');
-export const eyeMaterial = new THREE.MeshPhongMaterial({
-    map: eye_texture,
-    transparent: true
+export const eyeMaterial = new THREE.MeshBasicMaterial({
+    map: eye_texture
 });
 
-export const mainEyeMaterial = new THREE.MeshStandardMaterial( {
+export const mainEyeMaterial = new THREE.MeshToonMaterial( {
     map: eye_texture,
     transparent: true,
     metalness: 0.2,
