@@ -36,7 +36,7 @@ function speakRandomVerse()
     utterance.pitch = ranNum(0.5, 1.5);
     utterance.voice = getAlienVoice();
     utterance.volume = ranNum(0.5, 1.0);
-    // speechSynthesis.speak(utterance);
+    speechSynthesis.speak(utterance);
 
     const verseDisplay = document.getElementById("verseDisplay");
     verseDisplay.style.rotate = ranNum(-15, 15) + "deg";
